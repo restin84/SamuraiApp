@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SamuraiApp.Domain;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,11 @@ namespace SamuraiApp.Data
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
       optionsBuilder.UseSqlServer(
         "Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = SamuraiAppData");
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder) {
+      //here we are specifying that a key for a SamuraiBattle ks the (SamuraiId, BattleId) pair
+      modelBuilder.Entity<SamuraiBattle>().HasKey(s => new { s.SamuraiId, s.BattleId });
     }
   }
 }
