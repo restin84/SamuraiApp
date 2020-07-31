@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Logging;
 using SamuraiApp.Domain;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,20 @@ namespace SamuraiApp.Data
 
     public DbSet<Battle> Battles { get; set; }
 
-
+    public static readonly ILoggerFactory ConsoleLoggerFactory
+      = LoggerFactory.Create(builder => {
+        builder
+          .AddFilter((category, level) =>
+              category == DbLoggerCategory.Database.Command.Name
+              && level == LogLevel.Information)
+          .AddConsole(); //in the Microsoft.Extensions.Logging.Console package
+          
+      });
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-      optionsBuilder.UseSqlServer(
-        "Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = SamuraiAppData");
+      optionsBuilder
+        .UseLoggerFactory(ConsoleLoggerFactory)
+        .UseSqlServer(
+          "Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = SamuraiAppData");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
