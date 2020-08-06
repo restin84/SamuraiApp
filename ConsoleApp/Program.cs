@@ -1,4 +1,5 @@
-﻿using SamuraiApp.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SamuraiApp.Data;
 using SamuraiApp.Domain;
 using System;
 using System.Linq;
@@ -11,10 +12,11 @@ namespace ConsoleApp
     static void Main(string[] args) {
       //context.Database.EnsureCreated();
       //GetSamurais("Before Add:");
-      AddSamurai();
-      GetSamurais("After Add:");
+      //AddSamurai();
+      //GetSamurais("After Add:");
       //InsertMultipleSamurais();
-      InsertVariousTypes();
+      //InsertVariousTypes();
+      QueryFilters();
       Console.Write("Press any key...");
       Console.ReadKey();
     }
@@ -47,6 +49,20 @@ namespace ConsoleApp
       foreach(var samurai in samurais) {
         Console.WriteLine(samurai.Name);
       }
+    }
+
+    public static void QueryFilters() {
+      var samurais = context.Samurais.Where(
+        s => s.Name == "Doug").ToList();
+      var samurais2 = (from s in context.Samurais
+                       where s.Name == "Doug"
+                       select s).ToList();
+      var name = "Doug";
+      var samurais3 = (from s in context.Samurais
+                       where s.Name == name
+                       select s).ToList();
+      var samurais4 = context.Samurais.Where(s =>
+        EF.Functions.Like(s.Name, "D%")).ToList();
     }
   }
 }
