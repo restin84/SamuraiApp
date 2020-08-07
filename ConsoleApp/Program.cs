@@ -52,17 +52,29 @@ namespace ConsoleApp
     }
 
     public static void QueryFilters() {
-      var samurais = context.Samurais.Where(
-        s => s.Name == "Doug").ToList();
-      var samurais2 = (from s in context.Samurais
-                       where s.Name == "Doug"
-                       select s).ToList();
+      //var samurais = context.Samurais.Where(
+      //  s => s.Name == "Doug").ToList();
+      //var samurais2 = (from s in context.Samurais
+      //                 where s.Name == "Doug"
+      //                 select s).ToList();
+      //var name = "Doug";
+      //var samurais3 = (from s in context.Samurais
+      //                 where s.Name == name
+      //                 select s).ToList();
+      //var samurais4 = context.Samurais.Where(s =>
+      //  EF.Functions.Like(s.Name, "D%")).ToList();
       var name = "Doug";
-      var samurais3 = (from s in context.Samurais
-                       where s.Name == name
-                       select s).ToList();
-      var samurais4 = context.Samurais.Where(s =>
-        EF.Functions.Like(s.Name, "D%")).ToList();
+      var samurais = context.Samurais
+        .FirstOrDefault(s => s.Name == name);
+      //Find is a DBSet method that will execute right away
+      //If the object with the key as param is already in 
+      //memory and being tracked by the context then no query
+      //is needed
+      var samuraiWithId = context.Samurais.Find(2);
+      //Last() or LastOrDefault() methods will only work 
+      //if you first sort the query using the OrderBy method
+      var lastSamurai = context.Samurais.OrderBy(s => s.Id)
+        .LastOrDefault(s => s.Name == name);
     }
   }
 }
