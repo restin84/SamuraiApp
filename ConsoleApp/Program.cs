@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using SamuraiApp.Data;
 using SamuraiApp.Domain;
 using System;
@@ -16,7 +17,10 @@ namespace ConsoleApp
       //GetSamurais("After Add:");
       //InsertMultipleSamurais();
       //InsertVariousTypes();
-      QueryFilters();
+      //QueryFilters();
+      //RetrieveAndUpdateSamurai();
+      //RetrieveAndUpdateMultipleSamurais();
+      MultipleDatabaseOperations();
       Console.Write("Press any key...");
       Console.ReadKey();
     }
@@ -75,6 +79,29 @@ namespace ConsoleApp
       //if you first sort the query using the OrderBy method
       var lastSamurai = context.Samurais.OrderBy(s => s.Id)
         .LastOrDefault(s => s.Name == name);
+    }
+
+    private static void RetrieveAndUpdateSamurai()
+    {
+      var samurai = context.Samurais.FirstOrDefault();
+      samurai.Name += "San";
+      context.SaveChanges();
+    }
+
+    private static void RetrieveAndUpdateMultipleSamurais()
+    {
+      //Skip() and Take() methods are good for paging
+      var samurais = context.Samurais.Skip(4).Take(4).ToList();
+      samurais.ForEach(s => s.Name += "San");
+      context.SaveChanges();
+    }
+
+    private static void MultipleDatabaseOperations()
+    {
+      var samurai = context.Samurais.FirstOrDefault();
+      samurai.Name += "San";
+      context.Samurais.Add(new Samurai() { Name = "Kikuchiyo" });
+      context.SaveChanges();
     }
   }
 }
