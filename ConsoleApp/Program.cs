@@ -20,12 +20,14 @@ namespace ConsoleApp
       //QueryFilters();
       //RetrieveAndUpdateSamurai();
       //RetrieveAndUpdateMultipleSamurais();
-      MultipleDatabaseOperations();
+      //MultipleDatabaseOperations();
+      RetrieveAndDeleteASamurai();
       Console.Write("Press any key...");
       Console.ReadKey();
     }
 
     private static void InsertMultipleSamurais() {
+      //Bulk insert happens at 4 inserts
       var samurai = new Samurai { Name = "Doug" };
       var samurai2 = new Samurai { Name = "Everest" };
       var samurai3 = new Samurai { Name = "Number 3" };
@@ -101,6 +103,12 @@ namespace ConsoleApp
       var samurai = context.Samurais.FirstOrDefault();
       samurai.Name += "San";
       context.Samurais.Add(new Samurai() { Name = "Kikuchiyo" });
+      context.SaveChanges();
+    }
+
+    private static void RetrieveAndDeleteASamurai() {
+      var samurai = context.Samurais.Find(18);
+      context.Samurais.Remove(samurai);
       context.SaveChanges();
     }
   }
