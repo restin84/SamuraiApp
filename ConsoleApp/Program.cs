@@ -22,7 +22,8 @@ namespace ConsoleApp
       //RetrieveAndUpdateMultipleSamurais();
       //MultipleDatabaseOperations();
       //RetrieveAndDeleteASamurai();
-      InsertBattle();
+      //InsertBattle();
+      QueryAndUpdateBattleDisconnected();
       Console.Write("Press any key...");
       Console.ReadKey();
     }
@@ -130,7 +131,11 @@ namespace ConsoleApp
      * that has a module about patterns for handling disconnected 
      * scenarios
      */
-    private static void QueryAndUpdateBattle_Disconnected() {
+    private static void QueryAndUpdateBattleDisconnected() {
+      //AsNoTracking() will specify that this query should not 
+      //bother tracking its results. The DbContext will NOT 
+      //create Entity Entry objects to track the results of the 
+      //query
       var battle = context.Battles.AsNoTracking().FirstOrDefault();
       battle.EndDate = new DateTime(1560, 06, 30);
       using (var newContextInstance = new SamuraiContext()) {
