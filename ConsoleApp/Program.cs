@@ -122,6 +122,14 @@ namespace ConsoleApp
       context.SaveChanges();
     }
 
+    //In a disconnected scenario each method to retrieve or update data
+    //will instantiate its own DBContext instance and then dispose it when
+    //its finished
+    /*
+     * Julie Lerman has a course: Entity Framework in the Enterprise
+     * that has a module about patterns for handling disconnected 
+     * scenarios
+     */
     private static void QueryAndUpdateBattle_Disconnected() {
       var battle = context.Battles.AsNoTracking().FirstOrDefault();
       battle.EndDate = new DateTime(1560, 06, 30);
