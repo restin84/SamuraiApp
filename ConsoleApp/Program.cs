@@ -21,7 +21,8 @@ namespace ConsoleApp
       //RetrieveAndUpdateSamurai();
       //RetrieveAndUpdateMultipleSamurais();
       //MultipleDatabaseOperations();
-      RetrieveAndDeleteASamurai();
+      //RetrieveAndDeleteASamurai();
+      InsertBattle();
       Console.Write("Press any key...");
       Console.ReadKey();
     }
@@ -110,6 +111,26 @@ namespace ConsoleApp
       var samurai = context.Samurais.Find(18);
       context.Samurais.Remove(samurai);
       context.SaveChanges();
+    }
+
+    private static void InsertBattle() {
+      context.Battles.Add(new Battle() {
+        Name = "Battle of Okehazam",
+        StartDate = new DateTime(1560, 05, 01),
+        EndDate = new DateTime(1560, 06, 15)
+      });
+      context.SaveChanges();
+    }
+
+    private static void QueryAndUpdateBattle_Disconnected() {
+      var battle = context.Battles.AsNoTracking().FirstOrDefault();
+      battle.EndDate = new DateTime(1560, 06, 30);
+      using (var newContextInstance = new SamuraiContext()) {
+        //Use Update() to mark the object as modified
+        //Now the new context is tracking this Battle object
+        newContextInstance.Battles.Update(battle);
+        newContextInstance.SaveChanges();
+      }
     }
   }
 }
