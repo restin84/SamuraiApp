@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Internal;
 using SamuraiApp.Data;
 using SamuraiApp.Domain;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace ConsoleApp
@@ -23,7 +25,12 @@ namespace ConsoleApp
       //MultipleDatabaseOperations();
       //RetrieveAndDeleteASamurai();
       //InsertBattle();
-      QueryAndUpdateBattleDisconnected();
+      //QueryAndUpdateBattleDisconnected();
+      //InsertNewSamuraiWithAQuote();
+      //InsertNewSamuraiWithManyQuotes();
+      //AddQuoteToExistingSamuraiWhileTracked();
+      //AddQuoteToExistingSamuraiNotTracked(19);
+      AddQuoteToExistingSamuraiNotTrackedEasy(2);
       Console.Write("Press any key...");
       Console.ReadKey();
     }
@@ -143,6 +150,65 @@ namespace ConsoleApp
         //Now the new context is tracking this Battle object
         newContextInstance.Battles.Update(battle);
         newContextInstance.SaveChanges();
+      }
+
+    }
+    private static void InsertNewSamuraiWithAQuote() {
+      var samurai = new Samurai {
+        Name = "Kambei Shimada",
+        Quotes = new List<Quote>() {
+          new Quote() {Text = "I've come to save you" }
+        }
+      };
+      context.Samurais.Add(samurai);
+      context.SaveChanges();
+    }
+
+    private static void InsertNewSamuraiWithManyQuotes() {
+      var samurai = new Samurai {
+        Name = "Kyuzo",
+        Quotes = new List<Quote> {
+          new Quote {Text = "Watch out for my sharp sword!" },
+          new Quote { Text = "I told you to watch out for my sharp sword! Oh well!"}
+        }
+      };
+      context.Samurais.Add(samurai);
+      context.SaveChanges();
+    }
+
+    private static void AddQuoteToExistingSamuraiWhileTracked() {
+      var samurai = context.Samurais.FirstOrDefault();
+      samurai.Quotes.Add(new Quote {
+        Text = "I bet you're happy that I've saved you!"
+      });
+      context.SaveChanges();
+    }
+
+    private static void AddQuoteToExistingSamuraiNotTracked(int samuraiId) {
+      var samurai = context.Samurais.Find(samuraiId);
+      //adding a quote with only the text property set but NO Id prop set
+      samurai.Quotes.Add(new Quote {
+        Text = "Now that I have saved you, will you feed me dinner?"
+      });
+      using (var newContext = new SamuraiContext()) {
+        //EFCs default behavior assumes that the Quote's FK to a Samurai
+        //must be the key of the parent (samurai var)
+        //newContext.Samurais.Update(samurai);//This results in an update call
+        newContext.Samurais.Attach(samurai); //This will NOT call update
+        newContext.SaveChanges();
+      }
+    }
+
+    private static void AddQuoteToExistingSamuraiNotTrackedEasy(int samuraiId) {
+      var quote = new Quote {
+        Text = "Now that I've saved you, will you feed me dinner again?",
+        Id = samuraiId
+      };
+      using (var context = new SamuraiContext()) {
+        context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Quotes ON");
+        context.Quotes.Add(quote);
+        context.SaveChanges();
+        context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Quotes OFF");
       }
     }
   }
