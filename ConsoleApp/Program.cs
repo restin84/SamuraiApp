@@ -30,7 +30,8 @@ namespace ConsoleApp
       //InsertNewSamuraiWithManyQuotes();
       //AddQuoteToExistingSamuraiWhileTracked();
       //AddQuoteToExistingSamuraiNotTracked(19);
-      AddQuoteToExistingSamuraiNotTrackedEasy(2);
+      //AddQuoteToExistingSamuraiNotTrackedEasy(2);
+      EagerLoadSamuraiWithQuotes();
       Console.Write("Press any key...");
       Console.ReadKey();
     }
@@ -202,14 +203,17 @@ namespace ConsoleApp
     private static void AddQuoteToExistingSamuraiNotTrackedEasy(int samuraiId) {
       var quote = new Quote {
         Text = "Now that I've saved you, will you feed me dinner again?",
-        Id = samuraiId
+        SamuraiId = samuraiId
       };
       using (var context = new SamuraiContext()) {
-        context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Quotes ON");
         context.Quotes.Add(quote);
         context.SaveChanges();
-        context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Quotes OFF");
       }
+    }
+
+    private static void EagerLoadSamuraiWithQuotes() {
+      //This will perform eager loading on the Samurai DbSet's Quotes nav prop
+      var samuraiWithQuotes = context.Samurais.Include(s => s.Quotes).ToList();
     }
   }
 }
