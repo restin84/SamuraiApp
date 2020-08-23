@@ -31,7 +31,8 @@ namespace ConsoleApp
       //AddQuoteToExistingSamuraiWhileTracked();
       //AddQuoteToExistingSamuraiNotTracked(19);
       //AddQuoteToExistingSamuraiNotTrackedEasy(2);
-      EagerLoadSamuraiWithQuotes();
+      //EagerLoadSamuraiWithQuotes();
+      ProjectSomeProperties();
       Console.Write("Press any key...");
       Console.ReadKey();
     }
@@ -214,6 +215,29 @@ namespace ConsoleApp
     private static void EagerLoadSamuraiWithQuotes() {
       //This will perform eager loading on the Samurai DbSet's Quotes nav prop
       var samuraiWithQuotes = context.Samurais.Include(s => s.Quotes).ToList();
+    }
+
+    private static void ProjectSomeProperties() {
+      //var someProperties = context.Samurais
+      //  .Select(s => new { s.Id, s.Name, s.Quotes.Count })
+      //  .ToList();
+
+      //Here we are filtering the related data that is returned in the 
+      //projectd type
+      //Important: the anonymous types do not result in tracking of entity objects
+      //var somePropertiesWithoutQuotes = context.Samurais
+      //  .Select(s => new { s.Id, s.Name, HappyQuotes = s.Quotes.Where(q => q.Text.Contains("happy")) })
+      //  .ToList();
+
+      //Projecting full entity objects while filtering the related objects that
+      //are also returned
+      var samuraisWithHappyQuotes = context.Samurais
+        .Select(s => new {
+          Samurai = s,
+          HappyQuotes = s.Quotes.Where(q => q.Text.Contains("happy"))
+        })
+        .ToList();
+      var firstSamurai = samuraisWithHappyQuotes[0].Samurai.Name += " The Happiest";
     }
   }
 }
