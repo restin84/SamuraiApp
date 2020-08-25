@@ -32,7 +32,8 @@ namespace ConsoleApp
       //AddQuoteToExistingSamuraiNotTracked(19);
       //AddQuoteToExistingSamuraiNotTrackedEasy(2);
       //EagerLoadSamuraiWithQuotes();
-      ProjectSomeProperties();
+      //ProjectSomeProperties();
+      FilteringWithRelatedData();
       Console.Write("Press any key...");
       Console.ReadKey();
     }
@@ -238,6 +239,12 @@ namespace ConsoleApp
         })
         .ToList();
       var firstSamurai = samuraisWithHappyQuotes[0].Samurai.Name += " The Happiest";
+    }
+
+    private static void FilteringWithRelatedData() {
+      var samurais = context.Samurais
+        .Where(s => s.Quotes.Any(q => q.Text.Contains("happy")))
+        .ToList();
     }
   }
 }
