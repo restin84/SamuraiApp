@@ -33,7 +33,9 @@ namespace ConsoleApp
       //AddQuoteToExistingSamuraiNotTrackedEasy(2);
       //EagerLoadSamuraiWithQuotes();
       //ProjectSomeProperties();
-      FilteringWithRelatedData();
+      //FilteringWithRelatedData();
+      //ModifyingRelatedDataWhenTracked();
+      ModifyingRelatedDataWhenNotTracked();
       Console.Write("Press any key...");
       Console.ReadKey();
     }
@@ -242,9 +244,33 @@ namespace ConsoleApp
     }
 
     private static void FilteringWithRelatedData() {
+      //We don't care if Quotes are tracked but we can use them in 
+      //the query
       var samurais = context.Samurais
         .Where(s => s.Quotes.Any(q => q.Text.Contains("happy")))
         .ToList();
+    }
+
+    private static void ModifyingRelatedDataWhenTracked() {
+      //Eager load the Quotes when getting the Samurai
+      var samurai = context.Samurais.Include(s => s.Quotes).FirstOrDefault(s => s.Id == 2);
+      //Since the quotes were loaded we can modify them here
+      samurai.Quotes[0].Text = " Did you hear that?";
+      context.Quotes.Remove(samurai.Quotes[2]);
+      context.SaveChanges();
+    }
+
+    private static void ModifyingRelatedDataWhenNotTracked() {
+      var samurai = context.Samurais.Include(s => s.Quotes).FirstOrDefault(s => s.Id == 2);
+      var quote = samurai.Quotes[0];
+      quote.Text += " Did you hear that again?";
+      using (var newContext = new SamuraiContext()) {
+        //newContext.Quotes.Update(quote); //This will update ALL the quotes of the Samurai
+        //We can simply use the Entry() method to change the State of the modified
+        //Quote so the EF Core knows to update ONLY that entry
+        newContext.Entry(quote).State = EntityState.Modified; 
+        newContext.SaveChanges();
+      }
     }
   }
 }
