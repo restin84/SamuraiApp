@@ -35,7 +35,10 @@ namespace ConsoleApp
       //ProjectSomeProperties();
       //FilteringWithRelatedData();
       //ModifyingRelatedDataWhenTracked();
-      ModifyingRelatedDataWhenNotTracked();
+      //ModifyingRelatedDataWhenNotTracked();
+      //JoinBattleAndSamurai();
+      //EnlistSamuraiIntoBattle();
+      RemoveJoinBetweenSamuraiAndBattleSimple();
       Console.Write("Press any key...");
       Console.ReadKey();
     }
@@ -271,6 +274,38 @@ namespace ConsoleApp
         newContext.Entry(quote).State = EntityState.Modified; 
         newContext.SaveChanges();
       }
+    }
+
+    /*
+     * Look at "Entity Framework Core 2: Mappings" for "Mapping and Interacting 
+     * with Many-to-many Relationships" module to see this how to do this stuff in disconnected
+     * scenarios
+     */ 
+    private static void JoinBattleAndSamurai() {
+      //Samurai and Battle already exist and have their Ids
+      var sbJoin = new SamuraiBattle { SamuraiId = 1, BattleId = 2 };
+      //Note that there is no SamuraiBattles DbSet but we can add this SamuraiBattle
+      //directly to the DbContext
+      context.Add(sbJoin);
+      context.SaveChanges();
+    }
+
+    private static void EnlistSamuraiIntoBattle() {
+      var battle = context.Battles.Find(1);
+      //Here we are just adding a SamuraiBattle via the Battle that is 
+      //in memory. EF Core will figure out the Id of the Battle (notice
+      //we do not provide it below)
+      battle.SamuraiBattles
+        .Add(new SamuraiBattle { SamuraiId = 21 });
+      context.SaveChanges();
+    }
+
+    private static void RemoveJoinBetweenSamuraiAndBattleSimple() {
+      var join = new SamuraiBattle { BattleId = 1, SamuraiId = 2 };
+      //here we are just instructing EF Core to delete the SamuraiBattle
+      //where BattleId = 1 and SamuraiId = 2
+      context.Remove(join);
+      context.SaveChanges();
     }
   }
 }
