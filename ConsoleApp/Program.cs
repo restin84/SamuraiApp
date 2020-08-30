@@ -9,8 +9,7 @@ using System.Linq;
 
 namespace ConsoleApp
 {
-  class Program
-  {
+  class Program {
     private static SamuraiContext context = new SamuraiContext();
     static void Main(string[] args) {
       //context.Database.EnsureCreated();
@@ -38,7 +37,12 @@ namespace ConsoleApp
       //ModifyingRelatedDataWhenNotTracked();
       //JoinBattleAndSamurai();
       //EnlistSamuraiIntoBattle();
-      RemoveJoinBetweenSamuraiAndBattleSimple();
+      //RemoveJoinBetweenSamuraiAndBattleSimple();
+      //AddNewSamuraiWithHorse();
+      //AddNewSamuraiToHorseUsingId();
+      //AddNewHorseSamuraiToObject();
+      //AddNewHorseToDisconnectedSamuraiObject();
+      ReplaceHorse();
       Console.Write("Press any key...");
       Console.ReadKey();
     }
@@ -69,7 +73,7 @@ namespace ConsoleApp
     private static void GetSamurais(string text) {
       var samurais = context.Samurais.ToList();
       Console.WriteLine($"{text}: Samurai count is {samurais.Count}");
-      foreach(var samurai in samurais) {
+      foreach (var samurai in samurais) {
         Console.WriteLine(samurai.Name);
       }
     }
@@ -100,23 +104,20 @@ namespace ConsoleApp
         .LastOrDefault(s => s.Name == name);
     }
 
-    private static void RetrieveAndUpdateSamurai()
-    {
+    private static void RetrieveAndUpdateSamurai() {
       var samurai = context.Samurais.FirstOrDefault();
       samurai.Name += "San";
       context.SaveChanges();
     }
 
-    private static void RetrieveAndUpdateMultipleSamurais()
-    {
+    private static void RetrieveAndUpdateMultipleSamurais() {
       //Skip() and Take() methods are good for paging
       var samurais = context.Samurais.Skip(4).Take(4).ToList();
       samurais.ForEach(s => s.Name += "San");
       context.SaveChanges();
     }
 
-    private static void MultipleDatabaseOperations()
-    {
+    private static void MultipleDatabaseOperations() {
       var samurai = context.Samurais.FirstOrDefault();
       samurai.Name += "San";
       context.Samurais.Add(new Samurai() { Name = "Kikuchiyo" });
@@ -271,7 +272,7 @@ namespace ConsoleApp
         //newContext.Quotes.Update(quote); //This will update ALL the quotes of the Samurai
         //We can simply use the Entry() method to change the State of the modified
         //Quote so the EF Core knows to update ONLY that entry
-        newContext.Entry(quote).State = EntityState.Modified; 
+        newContext.Entry(quote).State = EntityState.Modified;
         newContext.SaveChanges();
       }
     }
@@ -280,7 +281,7 @@ namespace ConsoleApp
      * Look at "Entity Framework Core 2: Mappings" for "Mapping and Interacting 
      * with Many-to-many Relationships" module to see this how to do this stuff in disconnected
      * scenarios
-     */ 
+     */
     private static void JoinBattleAndSamurai() {
       //Samurai and Battle already exist and have their Ids
       var sbJoin = new SamuraiBattle { SamuraiId = 1, BattleId = 2 };
@@ -305,6 +306,42 @@ namespace ConsoleApp
       //here we are just instructing EF Core to delete the SamuraiBattle
       //where BattleId = 1 and SamuraiId = 2
       context.Remove(join);
+      context.SaveChanges();
+    }
+
+    private static void AddNewSamuraiWithHorse() {
+      var samurai = new Samurai { Name = "Juna Ujichika" };
+      samurai.Horse = new Horse { Name = "Silver" };
+      context.Samurais.Add(samurai);
+      context.SaveChanges();
+    }
+
+    private static void AddNewSamuraiToHorseUsingId() {
+      var horse = new Horse { Name = "Scout", SamuraiId = 2 };
+      context.Add(horse);
+      context.SaveChanges();
+    }
+
+    private static void AddNewHorseSamuraiToObject() {
+      var samurai = context.Samurais.Find(22);
+      samurai.Horse = new Horse { Name = "Black Beauty" };
+      context.SaveChanges();
+    }
+
+    private static void AddNewHorseToDisconnectedSamuraiObject() {
+      var samurai = context.Samurais.AsNoTracking().FirstOrDefault(s => s.Id == 23);
+      samurai.Horse = new Horse { Name = "Mr. Ed" };
+      using (var newContext = new SamuraiContext()) {
+        newContext.Attach(samurai);
+        newContext.SaveChanges();
+      }
+    }
+
+    private static void ReplaceHorse() {
+      //var samurai = context.Samurais.Include(s => s.Horse).FirstOrDefault(s => s.Id == 23);
+      var samurai = context.Samurais.Find(23); //has a horse but the next line
+      //will throw an error because it has not been loaded into memory
+      samurai.Horse = new Horse { Name = "Trigger" };
       context.SaveChanges();
     }
   }
