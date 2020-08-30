@@ -42,7 +42,9 @@ namespace ConsoleApp
       //AddNewSamuraiToHorseUsingId();
       //AddNewHorseSamuraiToObject();
       //AddNewHorseToDisconnectedSamuraiObject();
-      ReplaceHorse();
+      //ReplaceHorse();
+      GetSamuraiWithClan();
+      GetClanWithSamurais();
       Console.Write("Press any key...");
       Console.ReadKey();
     }
@@ -343,6 +345,18 @@ namespace ConsoleApp
       //will throw an error because it has not been loaded into memory
       samurai.Horse = new Horse { Name = "Trigger" };
       context.SaveChanges();
+    }
+
+    private static void GetSamuraiWithClan() {
+      var samurai = context.Samurais.Include(s => s.Clan).FirstOrDefault();
+    }
+
+    private static void GetClanWithSamurais() {
+      //there is no Samurais nav prop on Clans and there is no ClanId in 
+      //Samurai that points back to a Clan. So you need to do stuff 
+      //like this when querying the 1-many Clan-Samurai relationship
+      var clan = context.Clans.Find(3);
+      var samuraisForClan = context.Samurais.Where(s => s.Clan.Id == 3).ToList();
     }
   }
 }
