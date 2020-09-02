@@ -43,8 +43,9 @@ namespace ConsoleApp
       //AddNewHorseSamuraiToObject();
       //AddNewHorseToDisconnectedSamuraiObject();
       //ReplaceHorse();
-      GetSamuraiWithClan();
-      GetClanWithSamurais();
+      //GetSamuraiWithClan();
+      //GetClanWithSamurais();
+      QuerySamuraiBattleStats();
       Console.Write("Press any key...");
       Console.ReadKey();
     }
@@ -357,6 +358,13 @@ namespace ConsoleApp
       //like this when querying the 1-many Clan-Samurai relationship
       var clan = context.Clans.Find(3);
       var samuraisForClan = context.Samurais.Where(s => s.Clan.Id == 3).ToList();
+    }
+
+    private static void QuerySamuraiBattleStats() {
+      var stats = context.SamuraiBattleStats.ToList();
+
+      //this throws an exception because a SamuraiBattleStat has no key
+      var findone = context.SamuraiBattleStats.Find(2);
     }
   }
 }
