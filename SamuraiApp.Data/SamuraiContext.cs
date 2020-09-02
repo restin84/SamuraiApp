@@ -17,6 +17,7 @@ namespace SamuraiApp.Data
     public DbSet<Clan> Clans { get; set; }
 
     public DbSet<Battle> Battles { get; set; }
+    public DbSet<SamuraiBattleStat> SamuraiBattleStats { get; set; }
 
     public static readonly ILoggerFactory ConsoleLoggerFactory
       = LoggerFactory.Create(builder => {
@@ -41,6 +42,11 @@ namespace SamuraiApp.Data
       //here we are telling the Model Builder that the Horse entity should map to a table called
       //horses
       modelBuilder.Entity<Horse>().ToTable("Horses");
+      //here we are letting the context know that the SamuraiBattleStat entity has no key
+      //Use the ToView() method so that EF Core does not try to create a DB Table for
+      //the SamuraiBattleStat
+      //Since we used HasNoKey EF Core will never track the SamuraiBattleStat entity
+      modelBuilder.Entity<SamuraiBattleStat>().HasNoKey().ToView("SamuraiBattleStats");
     }
   }
 }
