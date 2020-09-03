@@ -45,7 +45,9 @@ namespace ConsoleApp
       //ReplaceHorse();
       //GetSamuraiWithClan();
       //GetClanWithSamurais();
-      QuerySamuraiBattleStats();
+      //QuerySamuraiBattleStats();
+      //QueryUsingRawSql();
+      QueryUsingRawSqlWithInterpolation();
       Console.Write("Press any key...");
       Console.ReadKey();
     }
@@ -365,6 +367,32 @@ namespace ConsoleApp
 
       //this throws an exception because a SamuraiBattleStat has no key
       var findone = context.SamuraiBattleStats.Find(2);
+    }
+
+    private static void QueryUsingRawSql() {
+      //The query here must return data for all properties of the entity type or 
+      //EF Core will throw an exception
+      //Since the FromSqlRaw* methods are DbSet methods the SQL supplied can only
+      //be used for known entities. In other words you can't use the raw sql methods
+      //to return a type that is not known by the context
+      //You CANNOT select Nav props in raw sql methods
+      var samurais = context.Samurais.FromSqlRaw("select * from Samurais").ToList();
+      //Get the quotes along with the Samurais
+      samurais = context.Samurais.FromSqlRaw(
+        "select Id, Name, ClanId from Samurais").Include(s => s.Quotes).ToList();
+    }
+
+    private static void QueryUsingRawSqlWithInterpolation() {
+      /*
+       * IF USING INTERPOLATED STRINGS FOR THE SQL MAKE SURE TO CALL THE
+       * FromSqlInterpolated TO AVOID THE POSSIBILITY OF SQL INJECTION
+       * ATTACK!!!
+       */
+      string name = "Doug";
+      var samurais = context.Samurais
+        .FromSqlInterpolated($"select * from Samurais where name = {name}")
+        .ToList();
+
     }
   }
 }
