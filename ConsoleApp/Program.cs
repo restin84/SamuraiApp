@@ -47,7 +47,8 @@ namespace ConsoleApp
       //GetClanWithSamurais();
       //QuerySamuraiBattleStats();
       //QueryUsingRawSql();
-      QueryUsingRawSqlWithInterpolation();
+      //QueryUsingRawSqlWithInterpolation();
+      ExecuteSomeRawSql();
       Console.Write("Press any key...");
       Console.ReadKey();
     }
@@ -393,6 +394,15 @@ namespace ConsoleApp
         .FromSqlInterpolated($"select * from Samurais where name = {name}")
         .ToList();
 
+    }
+
+    private static void ExecuteSomeRawSql() {
+      var samuraiId = 22;
+      //var x = context.Database
+      //          .ExecuteSqlRaw("exec DeleteQuotesForSamurai {0}", samuraiId);
+      samuraiId = 23;
+      context.Database
+        .ExecuteSqlInterpolated($"exec DeleteQuotesForSamurai {samuraiId}");
     }
   }
 }
