@@ -19,6 +19,14 @@ namespace SamuraiApp.Data
     public DbSet<Battle> Battles { get; set; }
     public DbSet<SamuraiBattleStat> SamuraiBattleStats { get; set; }
 
+    public SamuraiContext() {
+
+    }
+
+    public SamuraiContext(DbContextOptions options) : base(options) {
+
+    }
+
     public static readonly ILoggerFactory ConsoleLoggerFactory
       = LoggerFactory.Create(builder => {
         builder
@@ -29,9 +37,11 @@ namespace SamuraiApp.Data
           
       });
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-      optionsBuilder
-        .UseSqlServer(
-          "Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = SamuraiTestData");
+      if (!optionsBuilder.IsConfigured) {
+        optionsBuilder
+           .UseSqlServer(
+             "Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = SamuraiTestData"); 
+      }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
