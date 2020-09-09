@@ -16,7 +16,7 @@ namespace ConsoleApp
       //GetSamurais("Before Add:");
       //AddSamurai();
       //GetSamurais("After Add:");
-      //InsertMultipleSamurais();
+      InsertMultipleSamurais();
       //InsertVariousTypes();
       //QueryFilters();
       //RetrieveAndUpdateSamurai();
@@ -48,19 +48,17 @@ namespace ConsoleApp
       //QuerySamuraiBattleStats();
       //QueryUsingRawSql();
       //QueryUsingRawSqlWithInterpolation();
-      ExecuteSomeRawSql();
+
+      //ExecuteSomeRawSql();
       Console.Write("Press any key...");
       Console.ReadKey();
     }
 
     private static void InsertMultipleSamurais() {
       //Bulk insert happens at 4 inserts
-      var samurai = new Samurai { Name = "Doug" };
-      var samurai2 = new Samurai { Name = "Everest" };
-      var samurai3 = new Samurai { Name = "Number 3" };
-      var samurai4 = new Samurai { Name = "Number 4" };
-      context.Samurais.AddRange(samurai, samurai2, samurai3, samurai4);
-      context.SaveChanges();
+      var bizdata = new BusinessDataLogic();
+      var samuraiNames = new string[] { "Sampson", "Tasha", "Number3", "Number4" };
+      var newSamuraisCreated = bizdata.AddMultipleSamurais(samuraiNames);
     }
 
     private static void InsertVariousTypes() {

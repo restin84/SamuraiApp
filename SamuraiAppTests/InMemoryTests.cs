@@ -17,7 +17,6 @@ namespace SamuraiAppTests
         var samurai = new Samurai();
         context.Samurais.Add(samurai);
         Assert.AreEqual(EntityState.Added, context.Entry(samurai).State);
-        
       }
     }
   }
