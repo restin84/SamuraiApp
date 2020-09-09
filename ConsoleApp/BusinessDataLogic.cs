@@ -29,5 +29,10 @@ namespace ConsoleApp
       var dbResult = context.SaveChanges();
       return dbResult;
     }
+    public int InsertNewSamurai(Samurai samurai) {
+      context.Samurais.Add(samurai);
+      var dbResult = context.SaveChanges();
+      return dbResult;
+    }
   }
 }
